@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    background-image: url('../images/fundo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#errorModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: auto;
+    text-align: center;
+    font-size: 14px;
+}
+
+.extra-container {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.extra-button {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: transparent;
+    color: #007BFF;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 90%;
+}
+
+.discord-icon {
+    width: 30px;
+    height: auto;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
