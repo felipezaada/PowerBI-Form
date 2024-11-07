@@ -10,7 +10,7 @@ $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 
 $sql = "CREATE TABLE IF NOT EXISTS usuario (
     id VARCHAR(32) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -31,14 +31,14 @@ if (isset($_POST['submitLogin'])) {
 class Usuario
 {
     public string $id;
-    public string $nome;
+    public string $username;
     public string $email;
     public string $senha;
 
     function cadastrar(PDO $pdo)
     {
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $this->nome = $_POST["username"];
+            $this->username = $_POST["username"];
             $this->email = $_POST["email"];
             $this->senha = $_POST["password"];
         }
@@ -53,24 +53,24 @@ class Usuario
                 throw new Exception("Este email já está cadastrado.");
             }
 
-            $sqlCheck = "SELECT * FROM usuario WHERE nome = :nome";
+            $sqlCheck = "SELECT * FROM usuario WHERE username = :username";
             $stmtCheck = $pdo->prepare($sqlCheck);
-            $stmtCheck->execute(['nome' => $this->nome]);
+            $stmtCheck->execute(['username' => $this->username]);
             if ($stmtCheck->rowCount() > 0) {
                 throw new Exception("Este username já está cadastrado.");
             }
 
-            $sql = "INSERT INTO usuario (id, nome, email, senha) VALUES (:id, :nome, :email, :senha)";
+            $sql = "INSERT INTO usuario (id, username, email, senha) VALUES (:id, :username, :email, :senha)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 'id' => $this->id,
-                'nome' => $this->nome, 
+                'username' => $this->username, 
                 'email' => $this->email, 
                 'senha' => password_hash($this->senha, PASSWORD_DEFAULT)
             ]);
 
             $_SESSION['id'] = $this->id;
-            $_SESSION['nome'] = $this->nome;
+            $_SESSION['username'] = $this->username;
             $_SESSION['email'] = $this->email;
 
             header("Location: index.php");
@@ -85,18 +85,18 @@ class Usuario
     function autenticar(PDO $pdo)
     {
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $this->nome = $_POST["username"];
+            $this->username = $_POST["username"];
             $this->senha = $_POST["password"];
         }
     
-        $sql = "SELECT * FROM usuario WHERE nome = :nome";
+        $sql = "SELECT * FROM usuario WHERE username = :username";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(['nome' => $this->nome]);
+        $stmt->execute(['username' => $this->username]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
     
         if ($usuario && password_verify($this->senha, $usuario['senha'])) {
             $_SESSION['id'] = $usuario['id'];
-            $_SESSION['nome'] = $usuario['nome'];
+            $_SESSION['username'] = $usuario['username'];
             $_SESSION['email'] = $usuario['email'];
             header("Location: index.php");
             exit();
