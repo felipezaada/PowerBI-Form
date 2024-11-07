@@ -1,9 +1,12 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,25 +39,27 @@ session_start();
         };
     </script>
 </head>
+
 <body>
     <div class="form-container">
         <h2>Login</h2>
         <form action="usuario.php" method="POST">
             <label for="username">Usuário:</label>
             <input type="text" id="username" name="username" required oninput="toLowerCase(this)" autocomplete="off">
-            
+
             <label for="password">Senha:</label>
             <input type="password" id="password" name="password" required oninput="toLowerCase(this)" autocomplete="off">
-            
+
             <button type="submit" name="submitLogin">Login</button>
         </form>
         <div class="extra-container">
-        <a href="registro.php" class="extra-button">Registre-se</a>
-         </div>
+            <a href="registro.php" class="extra-button">Registre-se</a>
+        </div>
     </div>
 
     <div id="errorModal">
         <p id="modalContent"></p>
     </div>
 </body>
+
 </html>

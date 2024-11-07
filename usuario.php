@@ -1,6 +1,7 @@
 <?php
-
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 $servername = "localhost";
 $username = "root";
@@ -48,26 +49,29 @@ class Usuario
         try {
             $sqlCheck = "SELECT * FROM usuario WHERE email = :email";
             $stmtCheck = $pdo->prepare($sqlCheck);
-            $stmtCheck->execute(['email' => $this->email]);
+            $stmtCheck->bindValue(':email', $this->email, PDO::PARAM_STR);
+            $stmtCheck->execute();
+
             if ($stmtCheck->rowCount() > 0) {
                 throw new Exception("Este email já está cadastrado.");
             }
 
             $sqlCheck = "SELECT * FROM usuario WHERE username = :username";
             $stmtCheck = $pdo->prepare($sqlCheck);
-            $stmtCheck->execute(['username' => $this->username]);
+            $stmtCheck->bindValue(':username', $this->username, PDO::PARAM_STR);
+            $stmtCheck->execute();
+
             if ($stmtCheck->rowCount() > 0) {
                 throw new Exception("Este username já está cadastrado.");
             }
 
             $sql = "INSERT INTO usuario (id, username, email, senha) VALUES (:id, :username, :email, :senha)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                'id' => $this->id,
-                'username' => $this->username, 
-                'email' => $this->email, 
-                'senha' => password_hash($this->senha, PASSWORD_DEFAULT)
-            ]);
+            $stmt->bindValue(':id', $this->id, PDO::PARAM_STR);
+            $stmt->bindValue(':username', $this->username, PDO::PARAM_STR);
+            $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
+            $stmt->bindValue(':senha', password_hash($this->senha, PASSWORD_DEFAULT), PDO::PARAM_STR);
+            $stmt->execute();
 
             $_SESSION['id'] = $this->id;
             $_SESSION['username'] = $this->username;
@@ -88,12 +92,14 @@ class Usuario
             $this->username = $_POST["username"];
             $this->senha = $_POST["password"];
         }
-    
+
         $sql = "SELECT * FROM usuario WHERE username = :username";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(['username' => $this->username]);
+        $stmt->bindValue(':username', $this->username, PDO::PARAM_STR);
+        $stmt->execute();
+
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         if ($usuario && password_verify($this->senha, $usuario['senha'])) {
             $_SESSION['id'] = $usuario['id'];
             $_SESSION['username'] = $usuario['username'];
@@ -105,6 +111,5 @@ class Usuario
             header("Location: login.php");
             exit();
         }
-    }    
+    }
 }
-?>

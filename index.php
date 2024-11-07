@@ -1,7 +1,17 @@
 <?php
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    include('formulario.php');
+
     if (!isset($_SESSION['id'])) {
         header("Location: login.php");
+    }
+
+    if (verificarFormularioRespondido($pdo, $_SESSION["username"])) {
+        header("Location: valeu.php");
+        exit();
     }
 ?>
 

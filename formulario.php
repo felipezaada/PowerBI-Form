@@ -1,6 +1,7 @@
 <?php
-
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 $servername = "localhost";
 $username = "root";
@@ -25,9 +26,24 @@ $sql = "CREATE TABLE IF NOT EXISTS formulario (
 
 $pdo->exec($sql);
 
+if (verificarFormularioRespondido($pdo, $_SESSION["username"])) {
+    header("Location: valeu.php");
+    exit();
+}
+
 if (isset($_POST['submitForm'])) {
     $formulario = new Formulario();
     $formulario->salvar($pdo);
+}
+
+function verificarFormularioRespondido(PDO $pdo, $username)
+{
+    $sql_check = "SELECT COUNT(*) FROM formulario WHERE usuario_username = :username";
+    $stmt_check = $pdo->prepare($sql_check);
+    $stmt_check->bindValue(':username', $username, PDO::PARAM_STR);
+    $stmt_check->execute();
+    $userEnviou = $stmt_check->fetchColumn();
+    return $userEnviou > 0;
 }
 
 class Formulario
@@ -65,23 +81,23 @@ class Formulario
         ) VALUES (
             :usuario_username, :nome, :rua, :numero, :bairro, :setor, :cidade, :caixa_dagua, :ralo, :vaso, :lixo
         )";
-        
+
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            'usuario_username' => $this->username,
-            'nome' => $this->nome,
-            'rua' => $this->rua,
-            'numero' => $this->numero,
-            'bairro' => $this->bairro,
-            'setor' => $this->setor,
-            'cidade' => $this->cidade,
-            'caixa_dagua' => (int) $this->caixa_dagua,
-            'ralo' => (int) $this->ralo,
-            'vaso' => (int) $this->vaso,
-            'lixo' => (int) $this->lixo
-        ]);
+        
+        // evitar SQL Injection
+        $stmt->bindValue(':usuario_username', $this->username, PDO::PARAM_STR);
+        $stmt->bindValue(':nome', $this->nome, PDO::PARAM_STR);
+        $stmt->bindValue(':rua', $this->rua, PDO::PARAM_STR);
+        $stmt->bindValue(':numero', $this->numero, PDO::PARAM_INT);
+        $stmt->bindValue(':bairro', $this->bairro, PDO::PARAM_STR);
+        $stmt->bindValue(':setor', $this->setor, PDO::PARAM_STR);
+        $stmt->bindValue(':cidade', $this->cidade, PDO::PARAM_STR);
+        $stmt->bindValue(':caixa_dagua', (int) $this->caixa_dagua, PDO::PARAM_INT);
+        $stmt->bindValue(':ralo', (int) $this->ralo, PDO::PARAM_INT);
+        $stmt->bindValue(':vaso', (int) $this->vaso, PDO::PARAM_INT);
+        $stmt->bindValue(':lixo', (int) $this->lixo, PDO::PARAM_INT);
+        
+        $stmt->execute();
         header("Location: valeu.php");
     }
 }
-
-?>

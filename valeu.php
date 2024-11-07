@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['id'])) {
     header("Location: login.php");
@@ -10,12 +12,14 @@ if (!isset($_SESSION['id'])) {
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Inicial</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <div class="container">
         <h1 style="color: #ffffff">Valeu, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
@@ -27,4 +31,5 @@ if (!isset($_SESSION['id'])) {
         <img src="images/discord.png" alt="Discord" class="discord-icon">
     </a>
 </body>
+
 </html>
