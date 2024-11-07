@@ -1,23 +1,9 @@
 <?php
+include('iniciarDB.php');
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "forms";
-$pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-
-$sql = "CREATE TABLE IF NOT EXISTS usuario (
-    id VARCHAR(32) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
-)";
-
-$pdo->exec($sql);
 
 if (isset($_POST['submitRegistro'])) {
     $usuario = new Usuario();

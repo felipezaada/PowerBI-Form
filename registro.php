@@ -1,4 +1,6 @@
 <?php
+include('iniciarDB.php');
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -30,7 +32,7 @@ if (session_status() == PHP_SESSION_NONE) {
             }, 3000);
         }
 
-        window.onload = function() {
+        window.onload = function () {
             const errorMessage = "<?php echo isset($_SESSION['error']) ? addslashes($_SESSION['error']) : ''; ?>";
             if (errorMessage) {
                 showError(errorMessage);
@@ -52,7 +54,8 @@ if (session_status() == PHP_SESSION_NONE) {
             <input type="email" id="email" name="email" required oninput="toLowerCase(this)" autocomplete="off">
 
             <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required oninput="toLowerCase(this)" autocomplete="off">
+            <input type="password" id="password" name="password" required oninput="toLowerCase(this)"
+                autocomplete="off">
 
             <button type="submit" name="submitRegistro">Registrar</button>
         </form>

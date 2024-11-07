@@ -1,30 +1,9 @@
 <?php
+include('iniciarDB.php');
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "forms";
-$pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-
-$sql = "CREATE TABLE IF NOT EXISTS formulario (
-    usuario_username VARCHAR(100) PRIMARY KEY,
-    nome VARCHAR(32),
-    rua VARCHAR(255) NOT NULL,
-    numero INT NOT NULL,
-    bairro VARCHAR(255) NOT NULL,
-    setor VARCHAR(255) NOT NULL,
-    cidade VARCHAR(255) NOT NULL,
-    caixa_dagua BOOLEAN NOT NULL,
-    ralo BOOLEAN NOT NULL,
-    vaso BOOLEAN NOT NULL,
-    lixo BOOLEAN NOT NULL,
-    FOREIGN KEY (usuario_username) REFERENCES usuario(username) ON DELETE CASCADE
-)";
-
-$pdo->exec($sql);
 
 if (verificarFormularioRespondido($pdo, $_SESSION["username"])) {
     header("Location: valeu.php");
@@ -83,8 +62,7 @@ class Formulario
         )";
 
         $stmt = $pdo->prepare($sql);
-        
-        // evitar SQL Injection
+
         $stmt->bindValue(':usuario_username', $this->username, PDO::PARAM_STR);
         $stmt->bindValue(':nome', $this->nome, PDO::PARAM_STR);
         $stmt->bindValue(':rua', $this->rua, PDO::PARAM_STR);
@@ -96,7 +74,7 @@ class Formulario
         $stmt->bindValue(':ralo', (int) $this->ralo, PDO::PARAM_INT);
         $stmt->bindValue(':vaso', (int) $this->vaso, PDO::PARAM_INT);
         $stmt->bindValue(':lixo', (int) $this->lixo, PDO::PARAM_INT);
-        
+
         $stmt->execute();
         header("Location: valeu.php");
     }
