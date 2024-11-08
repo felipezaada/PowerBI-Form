@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "forms";
+$dbname = "controlink_equipe1";
 
 try {
     global $pdo;
