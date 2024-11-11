@@ -30,7 +30,7 @@ class Formulario
     public string $username;
     public string $nome;
     public string $rua;
-    public int $numero;
+    public string $numero;
     public string $bairro;
     public string $setor;
     public string $cidade;
@@ -38,6 +38,8 @@ class Formulario
     public bool $ralo;
     public bool $vaso;
     public bool $lixo;
+    public float $latitude;
+    public float $longitude;
 
     public function salvar(PDO $pdo)
     {
@@ -53,12 +55,15 @@ class Formulario
             $this->ralo = (bool) $_POST["ralo"];
             $this->vaso = (bool) $_POST["vaso"];
             $this->lixo = (bool) $_POST["lixo"];
+            
+            // Obter latitude e longitude com a API do Google
+            $this->obterCoordenadas();
         }
 
         $sql = "INSERT INTO formulario (
-            usuario_username, nome, rua, numero, bairro, setor, cidade, caixa_dagua, ralo, vaso, lixo
+            usuario_username, nome, rua, numero, bairro, setor, cidade, caixa_dagua, ralo, vaso, lixo, latitude, longitude
         ) VALUES (
-            :usuario_username, :nome, :rua, :numero, :bairro, :setor, :cidade, :caixa_dagua, :ralo, :vaso, :lixo
+            :usuario_username, :nome, :rua, :numero, :bairro, :setor, :cidade, :caixa_dagua, :ralo, :vaso, :lixo, :latitude, :longitude
         )";
 
         $stmt = $pdo->prepare($sql);
@@ -66,7 +71,7 @@ class Formulario
         $stmt->bindValue(':usuario_username', $this->username, PDO::PARAM_STR);
         $stmt->bindValue(':nome', $this->nome, PDO::PARAM_STR);
         $stmt->bindValue(':rua', $this->rua, PDO::PARAM_STR);
-        $stmt->bindValue(':numero', $this->numero, PDO::PARAM_INT);
+        $stmt->bindValue(':numero', $this->numero, PDO::PARAM_STR); // Alterado para string para aceitar número com caracteres
         $stmt->bindValue(':bairro', $this->bairro, PDO::PARAM_STR);
         $stmt->bindValue(':setor', $this->setor, PDO::PARAM_STR);
         $stmt->bindValue(':cidade', $this->cidade, PDO::PARAM_STR);
@@ -74,8 +79,33 @@ class Formulario
         $stmt->bindValue(':ralo', (int) $this->ralo, PDO::PARAM_INT);
         $stmt->bindValue(':vaso', (int) $this->vaso, PDO::PARAM_INT);
         $stmt->bindValue(':lixo', (int) $this->lixo, PDO::PARAM_INT);
+        $stmt->bindValue(':latitude', $this->latitude, PDO::PARAM_STR);
+        $stmt->bindValue(':longitude', $this->longitude, PDO::PARAM_STR);
 
         $stmt->execute();
         header("Location: valeu.php");
+    }
+
+    private function obterCoordenadas()
+    {
+        // Combina os campos rua, bairro e cidade em um único endereço
+        $enderecoCompleto = $this->rua . ', ' . $this->numero . ', ' . $this->bairro . ', ' . $this->cidade;
+
+        // Substitua pela sua chave da API do Google
+        $apiKey = 'chave da api';
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($enderecoCompleto) . "&key=" . $apiKey;
+
+        // Requisição à API
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+
+        if ($data['status'] == 'OK') {
+            $this->latitude = $data['results'][0]['geometry']['location']['lat'];
+            $this->longitude = $data['results'][0]['geometry']['location']['lng'];
+        } else {
+            // Em caso de erro, pode-se definir valores padrão ou tratar de outra forma
+            $this->latitude = 0.0;
+            $this->longitude = 0.0;
+        }
     }
 }

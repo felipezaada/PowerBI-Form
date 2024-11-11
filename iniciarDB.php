@@ -9,11 +9,14 @@ try {
     $pdo = new PDO("mysql:host=$servername", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Criação do banco de dados, se não existir
     $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
     $pdo->exec($sql);
     $pdo->exec("USE $dbname");
 
-    $sql = "CREATE TABLE IF NOT EXISTS usuario (
+    // Criação das tabelas se não existirem
+    $sql = "
+    CREATE TABLE IF NOT EXISTS usuario (
         id VARCHAR(32) PRIMARY KEY,
         username VARCHAR(100) NOT NULL UNIQUE,
         email VARCHAR(100) NOT NULL UNIQUE,
@@ -33,11 +36,15 @@ try {
         ralo BOOLEAN NOT NULL,
         vaso BOOLEAN NOT NULL,
         lixo BOOLEAN NOT NULL,
+        latitude FLOAT NOT NULL,  -- Coluna para latitude
+        longitude FLOAT NOT NULL, -- Coluna para longitude
         FOREIGN KEY (usuario_username) REFERENCES usuario(username) ON DELETE CASCADE
     );";
-
+    
+    // Executa o SQL para criar as tabelas
     $pdo->exec($sql);
 
 } catch (PDOException $e) {
     echo "Erro ao conectar ao banco de dados: " . $e->getMessage();
 }
+?>
