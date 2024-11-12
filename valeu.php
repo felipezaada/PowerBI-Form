@@ -28,6 +28,9 @@ if (!isset($_SESSION['id'])) {
         <form action="logout.php" method="POST">
             <button type="submit">Sair</button>
         </form>
+        <form action="index.php" method="GET" style="margin-top: 10px;">
+            <button type="submit">Continuar</button>
+        </form>
     </div>
     <a href="https://discord.gg/7QejUNe9" target="_blank">
         <img src="images/discord.png" alt="Discord" class="discord-icon">

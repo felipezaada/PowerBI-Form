@@ -25,7 +25,8 @@ try {
     );
 
     CREATE TABLE IF NOT EXISTS formulario (
-        usuario_username VARCHAR(100) PRIMARY KEY,
+        formulario_id VARCHAR (32) PRIMARY KEY,
+        agente_username VARCHAR(100),
         nome VARCHAR(32),
         rua VARCHAR(255) NOT NULL,
         numero INT NOT NULL,
@@ -38,7 +39,7 @@ try {
         lixo BOOLEAN NOT NULL,
         latitude FLOAT NOT NULL,  -- Coluna para latitude
         longitude FLOAT NOT NULL, -- Coluna para longitude
-        FOREIGN KEY (usuario_username) REFERENCES usuario(username) ON DELETE CASCADE
+        FOREIGN KEY (agente_username) REFERENCES usuario(username) ON DELETE CASCADE
     );";
     
     // Executa o SQL para criar as tabelas

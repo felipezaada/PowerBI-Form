@@ -5,29 +5,15 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if (verificarFormularioRespondido($pdo, $_SESSION["username"])) {
-    header("Location: valeu.php");
-    exit();
-}
-
 if (isset($_POST['submitForm'])) {
     $formulario = new Formulario();
     $formulario->salvar($pdo);
 }
 
-function verificarFormularioRespondido(PDO $pdo, $username)
-{
-    $sql_check = "SELECT COUNT(*) FROM formulario WHERE usuario_username = :username";
-    $stmt_check = $pdo->prepare($sql_check);
-    $stmt_check->bindValue(':username', $username, PDO::PARAM_STR);
-    $stmt_check->execute();
-    $userEnviou = $stmt_check->fetchColumn();
-    return $userEnviou > 0;
-}
-
 class Formulario
 {
-    public string $username;
+    public string $formulario_id;
+    public string $agente_username;
     public string $nome;
     public string $rua;
     public string $numero;
@@ -44,7 +30,8 @@ class Formulario
     public function salvar(PDO $pdo)
     {
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $this->username = $_SESSION["username"];
+            $this->formulario_id = bin2hex(random_bytes(16));
+            $this->agente_username = $_SESSION["username"];
             $this->nome = $_POST["nome"];
             $this->rua = $_POST["rua"];
             $this->numero = $_POST["numero"];
@@ -61,14 +48,15 @@ class Formulario
         }
 
         $sql = "INSERT INTO formulario (
-            usuario_username, nome, rua, numero, bairro, setor, cidade, caixa_dagua, ralo, vaso, lixo, latitude, longitude
+            formulario_id, agente_username, nome, rua, numero, bairro, setor, cidade, caixa_dagua, ralo, vaso, lixo, latitude, longitude
         ) VALUES (
-            :usuario_username, :nome, :rua, :numero, :bairro, :setor, :cidade, :caixa_dagua, :ralo, :vaso, :lixo, :latitude, :longitude
+            :formulario_id, :agente_username, :nome, :rua, :numero, :bairro, :setor, :cidade, :caixa_dagua, :ralo, :vaso, :lixo, :latitude, :longitude
         )";
 
         $stmt = $pdo->prepare($sql);
 
-        $stmt->bindValue(':usuario_username', $this->username, PDO::PARAM_STR);
+        $stmt->bindValue(':formulario_id', $this->formulario_id, PDO::PARAM_STR);
+        $stmt->bindValue(':agente_username', $this->agente_username, PDO::PARAM_STR);
         $stmt->bindValue(':nome', $this->nome, PDO::PARAM_STR);
         $stmt->bindValue(':rua', $this->rua, PDO::PARAM_STR);
         $stmt->bindValue(':numero', $this->numero, PDO::PARAM_STR); // Alterado para string para aceitar número com caracteres
@@ -92,7 +80,7 @@ class Formulario
         $enderecoCompleto = $this->rua . ', ' . $this->numero . ', ' . $this->bairro . ', ' . $this->cidade;
 
         // Substitua pela sua chave da API do Google
-        $apiKey = 'chave da api';
+        $apiKey = 'sua chave aqui';
         $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($enderecoCompleto) . "&key=" . $apiKey;
 
         // Requisição à API
