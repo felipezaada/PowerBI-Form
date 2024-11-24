@@ -80,7 +80,7 @@ class Formulario
         $enderecoCompleto = $this->rua . ', ' . $this->numero . ', ' . $this->bairro . ', ' . $this->cidade;
 
         // Substitua pela sua chave da API do Google
-        $apiKey = 'sua chave aqui';
+        $apiKey = 'sua key aqui';
         $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . urlencode($enderecoCompleto) . "&key=" . $apiKey;
 
         // Requisição à API
